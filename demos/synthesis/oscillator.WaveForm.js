@@ -32,12 +32,17 @@
 	}
 
 	function loadUI () {
-		$('#playButton2').click(function () {
+		$('#playButtonWaveForm').click(function () {
 			playing = !playing;
-			$('#playButton2').text(playing ? 'Stop' : 'Play');
+			$('#playButtonWaveForm').text(playing ? 'Stop' : 'Play');
+		});
+		
+		$('#waveFormSelect').change(function () {
+			osc1.waveShape = $(this).val();
+			osc2.waveShape = $(this).val();
 		});
 	
-		$('#osc1Slider').slider( {
+		$('#osc1SliderWaveForm').slider( {
 			min: 40,
 			max: 1000,
 			step: .5,
@@ -46,7 +51,7 @@
 			slide: function (event, ui) { updateOscillator(osc1, ui.value); }
 		} );
 	
-		$('#osc2Slider').slider( {
+		$('#osc2SliderWaveForm').slider( {
 			min: 40,
 			max: 1000,
 			step: .5,
