@@ -1,0 +1,14 @@
+body{
+	font-family: Verdana, Helvetica, Arial, Sans-Serif;
+	text-align: center;
+	background: #222;
+}
+
+#main{
+	width: 700px;
+	text-align: left;
+	margin: auto;
+	background: #fff;
+	border: solid 5px #999;
+	padding: 20px;
+}
