@@ -12,3 +12,11 @@ body{
 	border: solid 5px #999;
 	padding: 20px;
 }
+
+#sequence input {
+	margin: 5px;
+}
+
+#sequence input.fourth {
+	margin-right: 15px;
+}
