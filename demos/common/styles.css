@@ -13,10 +13,18 @@ body{
 	padding: 20px;
 }
 
-#sequence input {
+div.sequence input {
 	margin: 5px;
 }
 
-#sequence input.fourth {
+div.sequence input.fourth {
 	margin-right: 15px;
+}
+
+div.sequence span {
+	margin-right: 10px;
+}
+
+div.sequence div.alt {
+	background: #ddd;
 }
