@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Samples</title>
+	<link rel="stylesheet" href="../common/styles.css"/>
+	<link rel="stylesheet" href="../common/jquery-ui.css"/>
+	<script src="../common/jquery-1.7.1.min.js"></script>
+	<script src="../common/jquery-ui.min.js"></script>
+	<script src="../common/audiolib.js"></script>
+	<script src="fft.js"></script>
+	
+	<style>
+		#canvas {
+			position: absolute;
+			top: 0;
+			pointer-events: none;
+		}
+	</style>
+</head>
+</head>
+<body>
+
+<div id="main">
+
+	<h2>FFT</h2>
+	
+	<h4>Tempo</h4>
+	<div id="tempoSlider"></div>
+	
+	<h4>Lasers</h4>
+	<div id="lasers" class="sequence"></div>
+	
+	<h4>Kick</h4>
+	<div id="kick" class="sequence"></div>
+
+	<h4>Snare</h4>
+	<div id="snare" class="sequence"></div>
+
+	<h4>Hi-Hat</h4>
+	<div id="hat" class="sequence"></div>
+	
+	
+</div>
+
+<canvas id="canvas" width="600" height="300"></canvas>
+
+</body>
+</html>
