@@ -1,3 +1,3 @@
-This repo is for Mike Hodnick's presentation to
-the JavaScript MN meetup group about audiolib.js.
+This is a repo of demos for an introduction to the
+audiolib.js JavaScript audio API.
 
