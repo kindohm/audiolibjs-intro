@@ -20,8 +20,8 @@
 		hatSequence 		= [],
 		fft,
 		width				= 600,
-		height				= 300,
-		waveScale 			= -4000,
+		height				= 200,
+		waveScale 			= -2000,
 		context,
 		fps 				= 60,
 		gradient,
@@ -37,11 +37,21 @@
 		canvas	  	= document.getElementById('canvas');
 		context		= canvas.getContext('2d');
 
+		/*
 		$(window).resize(function () {
 			handleWindowResize();
 		});
 
 		handleWindowResize();
+		*/
+		
+		width = canvas.width;
+		height = canvas.height;
+		
+		gradient = context.createLinearGradient(0, 0, 0, height/2);
+		gradient.addColorStop(0, "#ff0000");
+		gradient.addColorStop(1, "#0000ff");
+
 		
 		
 		loadSequence(laserSequence);
@@ -231,6 +241,7 @@
 		context.stroke();	
 	}
 	
+	/*
 	function handleWindowResize() {
    
 		context.clearRect ( 0, 0, width, height);
@@ -241,12 +252,9 @@
 		canvas.width = width;
 		canvas.height = height;
 		
-		gradient = context.createLinearGradient(0, 0, 0, height/2);
-		gradient.addColorStop(0, "#ff0000");
-		gradient.addColorStop(1, "#0000ff");
 
 	}
-
+*/
 	Sink.doInterval(function(){ 
     
     	drawFFT();

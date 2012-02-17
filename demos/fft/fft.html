@@ -12,8 +12,14 @@
 	<style>
 		#canvas {
 			position: absolute;
-			top: 0;
+			top: 100;
 			pointer-events: none;
+			height: 200px;
+			width: 600px;
+		}
+		
+		#controls {
+			margin-top: 150px;
 		}
 	</style>
 </head>
@@ -24,6 +30,9 @@
 
 	<h2>FFT</h2>
 	
+	<canvas id="canvas" width="600" height="200"></canvas>
+
+	<div id="controls">
 	<h4>Tempo</h4>
 	<div id="tempoSlider"></div>
 	
@@ -39,10 +48,10 @@
 	<h4>Hi-Hat</h4>
 	<div id="hat" class="sequence"></div>
 	
+	</div>
 	
 </div>
 
-<canvas id="canvas" width="600" height="300"></canvas>
 
 </body>
 </html>
