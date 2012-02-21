@@ -9,6 +9,7 @@
 	$(document).ready(function () {
 		device = audioLib.AudioDevice(audioCallback, channels);
 		sampler = audioLib.Sampler(device.sampleRate);
+		
 		laserRaw = atob(laserRaw);
     	sampler.loadWav(laserRaw, true);
 		

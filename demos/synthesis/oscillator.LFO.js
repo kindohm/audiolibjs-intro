@@ -1,7 +1,7 @@
 (function () {
 
 	var device,
-		osc1,
+		osc,
 		lfo,
 		channels = 2,
 		playing,

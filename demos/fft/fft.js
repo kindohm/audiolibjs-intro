@@ -231,7 +231,7 @@
 		context.fillStyle = gradient; //'rgb(200,0,0)';
 		context.moveTo(0, y);
 		var l = fft.spectrum.length / 8;
-		console.log(width);
+
 		for (i=0; i<l; i++){
 			context.lineTo(i / l * width, fft.spectrum[i] * waveScale + y);
 		}

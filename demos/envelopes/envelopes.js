@@ -16,9 +16,8 @@
 	});
 	
 	function down() {
-		//envelope = audioLib.ADSREnvelope(device.sampleRate);
 		envelope.state = 0;
-		release = false;
+		released = false;
 		releasePhase = false;
 		envelope.triggerGate(true);
 	}
@@ -37,10 +36,8 @@
 		for (var i = 0; i < buffer.length; i += channelCount) {
 			sample = 0;
 				
-		 	//envelope.append(buffer, 1);
 			envelope.generate();
 			
-			// state #5 is a timed release, so enter the release phase if here
 			if (envelope.state === 5) {
 				releasePhase = true;
 			}

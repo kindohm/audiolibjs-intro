@@ -15,9 +15,17 @@
 
 	<h1>Synthesis</h1>
 
+	<h2>Wave Forms</h2>
 
-	<!-- MULTIPLE OSCILLATORS -->
-	<h2>Multiple sine waves:</h2>
+	<p>Wave Form<br/>
+		<select id="waveFormSelect">
+			<option value="sine">sine</option>
+			<option value="sawtooth">sawtooth</option>
+			<option value="invSawtooth">invSawtooth</option>
+			<option value="square">square</option>
+			<option value="triangle">triangle</option>
+		</select>
+		</p>
 
 	<p>
 		<span>Oscillator 1:<span><br/>
@@ -28,7 +36,8 @@
 		<span>Oscillator 2:<span><br/>
 		<div id="osc2Slider"></div>
 	</p>
-	<p><button id="playButton2">Play</button></p>
+	
+	<p><button id="playButton">Play</button></p>
 	
 
 </div>

@@ -21,10 +21,14 @@
 	function audioCallback (buffer, channelCount) {
 	
 		if (playing) {
+		
 			var l = buffer.length, current;
+			
 			for (current = 0; current < l; current += channelCount) {
+			
 				osc1.generate();
 				osc2.generate();
+				
 				buffer[current] = osc1.getMix();
 				buffer[current + 1] = osc2.getMix();
 			}
@@ -42,8 +46,8 @@
 			max: 1000,
 			step: .5,
 			value: osc1InitialHz,
-			change: function (event, ui) { updateOscillator(osc1, ui.value); },
-			slide: function (event, ui) { updateOscillator(osc1, ui.value); }
+			change: function (event, ui) { osc1.frequency = ui.value; },
+			slide: function (event, ui) { osc1.frequency = ui.value; }
 		} );
 	
 		$('#osc2Slider').slider( {
@@ -51,13 +55,9 @@
 			max: 1000,
 			step: .5,
 			value: osc2InitialHz,
-			change: function (event, ui) { updateOscillator(osc2, ui.value); },
-			slide: function (event, ui) { updateOscillator(osc2, ui.value); }
+			change: function (event, ui) { osc2.frequency = ui.value; },
+			slide: function (event, ui) { osc2.frequency = ui.value; }
 		} );
 	}
-	
-	function updateOscillator (oscillator, frequency) {
-		oscillator.frequency = frequency;
-	}
-	
+		
 })();
