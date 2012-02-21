@@ -2501,7 +2501,8 @@ function IIRFilter(samplerate, cutoff, resonance, type){
 
 	self.cutoff = isNaN(cutoff) ? 20000 : cutoff; // > 40
 	self.resonance = !resonance ? 0.1 : resonance; // 0.0 - 1.0
-	self.samplerate = isNaN(samplerate) ? 44100 : sampleRate;
+	//self.samplerate = isNaN(samplerate) ? 44100 : sampleRate;
+	self.samplerate = isNaN(samplerate) ? 44100 : samplerate;
 	self.type = type || 0;
 
 	function calcCoeff(){
