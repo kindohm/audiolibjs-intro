@@ -1,0 +1,19 @@
+.sampleTable {
+  width: 100%;
+}
+
+.sampleTable td div {
+  text-align: center;
+  margin: 5px;
+  font-size: 75%;
+}
+
+.channel0 {
+  background-color: #71e9f4;
+  color: #000;
+}
+
+.channel1 {
+  background-color: #f4e971;
+  color: #000;
+}

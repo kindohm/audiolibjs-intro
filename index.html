@@ -16,35 +16,12 @@
 
 		<link rel="stylesheet" href="css/reveal.min.css">
 		<link rel="stylesheet" href="css/theme/default.css" id="theme">
-
-		<style>
-			.sampleTable {
-				width: 100%;
-			}
-
-			.sampleTable td div {
-				text-align: center;
-				margin: 5px;
-				font-size: 75%;
-			}
-
-			.channel0 {
-				background-color: #71e9f4;
-				color: #000;
-			}
-
-			.channel1 {
-				background-color: #f4e971;
-				color: #000;
-			}
-		</style>
-
-		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 
 		<script src="js/audiolib.min.js"></script>
+		<script src="js/demos.js"></script>
 
-		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
 		<script>
 			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
 		</script>
@@ -58,7 +35,6 @@
 
 		<div class="reveal">
 
-			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 
 				<section>
@@ -117,12 +93,97 @@
 				</section>
 
 				<section>
+					<section>
+						<h2>Audio API's in Browsers</h2>
+						<ul>
+							<li><a href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html">Web Audio API</a> (webkit)</li>
+							<li><a href="https://wiki.mozilla.org/Audio_Data_API">Audio Data API</a> (mozilla)</li>
+						</ul>
+						<br/>
+						<br/>
+						<p>These are unrelated to the HTML5 &lt;audio&gt; object.</p>
+					</section>
+
+					<section>
+						<h2>Mozilla Audio Data API Example</h2>
+						<pre><code>var audio = new Audio();
+audio.mozSetup(1, sampleRate);
+
+var currentWritePosition = 0;
+var prebufferSize = sampleRate / 2;
+var tail = null, tailPosition;
+
+setInterval(function() {
+  var written;
+  if(tail) {
+    written = audio.mozWriteAudio(tail.subarray(tailPosition));
+    currentWritePosition += written;
+    tailPosition += written;
+    if(tailPosition &lt; tail.length) {
+      return; 
+    }
+    tail = null;
+  }
+
+  var currentPosition = audio.mozCurrentSampleOffset();
+  var available = currentPosition + 
+    prebufferSize - currentWritePosition;
+  if(available &gt; 0) {
+    var soundData = new Float32Array(available);
+    readFn(soundData);
+
+    written = audio.mozWriteAudio(soundData);
+    if(written &lt; soundData.length) {
+      tail = soundData;
+      tailPosition = written;
+    }
+    currentWritePosition += written;
+  }
+}, 100);
+
+var frequency = 0, currentSoundSample;
+var sampleRate = 44100;
+
+function requestSoundData(soundData) {
+  if (!frequency) { 
+    return; // no sound selected
+  }
+
+  var k = 2* Math.PI * frequency / sampleRate;
+  for (var i=0, size=soundData.length; i&lt;size; i++) {
+    soundData[i] = Math.sin(k * currentSoundSample++);
+  }        
+}</code></pre>
+					</section>
+					<section>
+						<h2>Webkit Web Audio API Example</h2>
+						<pre><code>var context = new webkitAudioContext();
+var oscillator = context.createOscillator();
+oscillator.type = 0; // sine
+oscillator.frequency.value = 200; // hz
+oscillator.connect(context.destination);
+oscillator.noteOn &amp;&amp; oscillator.noteOn(0);</code></pre>
+					</section>
+					<section data-state="oscillator-demo">
+						<h2>audiolib.js Example</h2>
+						<pre><code>var osc, device, channels = 2;
+
+var audioCallback = function(buffer, channelCount) {
+	osc.append(buffer, channelCount);
+};
+
+device = audioLib.AudioDevice(audioCallback, channels);
+osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
+					<p><a href="demos/01-oscillator.html" target="_blank">demo</a></p>
+					</section>
+				</section>
+
+				<section>
 					<h1>THE END</h1>
 					<h3>BY Mike Hodnick / kindohm.com</h3>
 				</section>
 
 			</div>
-
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
@@ -130,8 +191,6 @@
 
 		<script>
 
-			// Full list of configuration options available here:
-			// https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
 				controls: true,
 				progress: true,
@@ -139,17 +198,12 @@
 				center: true,
 
 				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+				transition: Reveal.getQueryHash().transition || 'default', 
 
-				// Optional libraries used to extend on reveal.js
 				dependencies: [
 					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					// { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					// { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
 					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
-					// { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
-					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
 					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
 				]
 			});
