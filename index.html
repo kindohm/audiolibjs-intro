@@ -17,6 +17,28 @@
 		<link rel="stylesheet" href="css/reveal.min.css">
 		<link rel="stylesheet" href="css/theme/default.css" id="theme">
 
+		<style>
+			.sampleTable {
+				width: 100%;
+			}
+
+			.sampleTable td div {
+				text-align: center;
+				margin: 5px;
+				font-size: 75%;
+			}
+
+			.channel0 {
+				background-color: #71e9f4;
+				color: #000;
+			}
+
+			.channel1 {
+				background-color: #f4e971;
+				color: #000;
+			}
+		</style>
+
 		<!-- For syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 
@@ -48,9 +70,50 @@
 				</section>
 
 				<section>
-					<h2>What is audiolib.js for?</h2>
-					<p><a href="http://www.flickr.com/photos/magnusbrath/5339854082/" title="Unimpressed kitten by Magnus Bråth, on Flickr"><img src="http://farm6.staticflickr.com/5004/5339854082_c18afbfa6b.jpg" alt="Unimpressed kitten"></a></p>
-					<p>(aside from annoying your cat)</p>
+					<section>
+						<h2>A little digital audio theory</h2>
+						<ul>
+							<li>Samples</li>
+							<li>Sample Rate</li>
+							<li>Channels</li>
+							<li>Bits Per Sample</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Single-Channel Buffer</h2>
+						<br/>
+						<table class="sampleTable" cellspacing="3">
+							<tr>
+								<td class="channel0"><div>Sample #0</div></td>
+								<td class="channel0"><div>Sample #1</div></td>
+								<td class="channel0"><div>Sample #2</div></td>
+								<td class="channel0"><div>Sample #3</div></td>
+								<td class="channel0"><div>Sample #4</div></td>
+								<td class="channel0"><div>Sample #5</div></td>
+								<td class="channel0"><div>Sample #6</div></td>
+								<td><div><storng>...</strong></div></td>
+								<td class="channel0"><div>Sample #N</div></td>
+							</tr>
+						</table>
+					</section>
+					<section>
+						<h2>Two-Channel Buffer</h2>
+						<h3>a.k.a. Stereo</h3>
+						<br/>
+						<table class="sampleTable" cellspacing="3">
+							<tr>
+								<td class="channel0"><div>Sample #0 L</div></td>
+								<td class="channel1"><div>Sample #0 R</div></td>
+								<td class="channel0"><div>Sample #1 L</div></td>
+								<td class="channel1"><div>Sample #1 R</div></td>
+								<td class="channel0"><div>Sample #2 L</div></td>
+								<td class="channel1"><div>Sample #2 R</div></td>
+								<td><div><storng>...</strong></div></td>
+								<td class="channel0"><div>Sample #N L</div></td>
+								<td class="channel1"><div>Sample #N R</div></td>
+							</tr>
+						</table>
+					</section>
 				</section>
 
 				<section>
