@@ -14,7 +14,12 @@
 
       <h1>Samples Demo</h1>
 
-      
+      <h3>Simple Samples:</h3>
+      <p><button onclick="wookie1Sampler.noteOn();">Wookie 1</button></p>
+      <p><button onclick="wookie2Sampler.noteOn()">Wookie 2</button></p>
+
+      <h3>Pitch-Altered Samples:</h3>
+      <div id="buttons"></div>
 
     </div>
 
@@ -44,8 +49,28 @@ window.addEventListener('load', function(){
   var wookie1Sample = atob(wookie1);
   var wookie2Sample = atob(wookie2);
 
-  wookie1Sampler.loadWav(wookie1Sample);
-  wookie2Sampler.loadWav(wookie2Sample);
+  wookie1Sampler.loadWav(wookie1Sample, true);
+  wookie2Sampler.loadWav(wookie2Sample, true);
+
+  var buttonsDiv = $('#buttons');
+
+  var loadSamplerUI = function (sampler) {
+    var p = $('<p>');
+    $(buttonsDiv).append(p);
+
+    for (var i = 140; i <= 740; i += 50){
+      var button = $('<button>');
+      button.append(i);
+      $(p).append(button);
+
+      $(button).click(function (){
+        sampler.noteOn(parseInt($(this).text()));
+      });
+    }
+  }
+
+  loadSamplerUI(wookie1Sampler);
+  loadSamplerUI(wookie2Sampler);
 
 }, true);
 
