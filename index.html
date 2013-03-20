@@ -264,6 +264,29 @@ osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
 
 					</section>
 
+					<section>
+						<h2>Addition and Mixing</h2>
+
+						<pre><code>for (i = 0; i &lt; oscillators.length; i++) {
+  oscillators[i].generate();
+  sample += oscillators[i].getMix() * level;
+}</code></pre>
+						<p>Only so much headroom is available.</p>
+						<p>User-controlled mixing versus computed.</p>
+						<p><a href="demos/mixing.html" target="_blank">demo</a></p>
+
+					</section>
+
+				</section>
+
+				<section>
+					<h2>Samples</h2>
+
+					<ul>
+						<li>Base64-encoded</li>
+						<li>Data islands vs. files vs. HTTP</li>
+						<li>Beware of samples &gt;~ 500 KB</li> 
+					</ul>
 				</section>
 
 				<section>

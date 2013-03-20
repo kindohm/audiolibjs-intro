@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>samples demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Samples Demo</h1>
+
+      
+
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script src="samples/wookie1.js"></script>
+    <script src="samples/wookie2.js"></script>
+    <script>
+
+var channelCount = 1,
+  device, 
+  wookie1Sampler,
+  wookie2Sampler;
+
+var audioCallback = function(buffer, channels){
+
+  wookie1Sampler.append(buffer, channels);
+  wookie2Sampler.append(buffer, channels);
+
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  wookie1Sampler = audioLib.Sampler(device.sampleRate);
+  wookie2Sampler = audioLib.Sampler(device.sampleRate);
+
+  var wookie1Sample = atob(wookie1);
+  var wookie2Sample = atob(wookie2);
+
+  wookie1Sampler.loadWav(wookie1Sample);
+  wookie2Sampler.loadWav(wookie2Sample);
+
+}, true);
+
+
+    </script>
+  </body>
+
+</html>

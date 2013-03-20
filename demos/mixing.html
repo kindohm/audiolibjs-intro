@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>mixing demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Mixing Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+
+      <h3>Oscillator #1 Mix:</h3>
+      <div id="osc1Mix"></div>
+
+      <h3>Oscillator #2 Mix:</h3>
+      <div id="osc2Mix"></div>
+
+      <h3>Oscillator #3 Mix:</h3>
+      <div id="osc3Mix"></div>
+
+      <h3>Oscillator #4 Mix:</h3>
+      <div id="osc4Mix"></div>
+
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var playing = false,
+  amount = 0,
+  channelCount = 1,
+  device, 
+  oscillators = [],
+  mixLevels = [];
+
+var audioCallback = function(buffer, channels){
+  
+  if (playing) {
+
+    var length = buffer.length,
+      index,
+      oscIndex,
+      sample,
+      i;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+
+      for (oscIndex = 0; oscIndex < oscillators.length; oscIndex++) {
+        oscillators[oscIndex].generate();
+        sample += oscillators[oscIndex].getMix() * mixLevels[oscIndex];
+      }
+
+      for (i = 0; i < channels; i++){
+        buffer[index + i] = sample;
+      }
+      
+    }
+  }
+
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+
+  for (var i = 0; i < 4; i++) {
+    var osc = audioLib.Oscillator(device.sampleRate, 200 + 200 * i);
+    oscillators.push(osc);
+    mixLevels.push(0);
+  }
+
+  $('#osc1Mix').slider({
+    min: 0,
+    max: 1.00,
+    value: 0,
+    step: 0.01,
+    slide: function( event, ui ) {
+      mixLevels[0] = ui.value;
+    }
+  });
+
+  $('#osc2Mix').slider({
+    min: 0,
+    max: 1.00,
+    value: 0,
+    step: 0.01,
+    slide: function( event, ui ) {
+      mixLevels[1] = ui.value;
+    }
+  });
+
+  $('#osc3Mix').slider({
+    min: 0,
+    max: 1.00,
+    value: 0,
+    step: 0.01,
+    slide: function( event, ui ) {
+      mixLevels[2] = ui.value;
+    }
+  });
+
+  $('#osc4Mix').slider({
+    min: 0,
+    max: 1.00,
+    value: 0,
+    step: 0.01,
+    slide: function( event, ui ) {
+      mixLevels[3] = ui.value;
+    }
+  });
+
+  $('#play').click(function(){
+    playing = !playing;
+  });
+
+
+}, true);
+
+
+
+    </script>
+  </body>
+
+</html>
