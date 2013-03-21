@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>effects demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Effects Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+
+      <h3>Oscillator Hz:</h3>
+      <div id="hz"></div>
+
+      <h3>LFO Speed:</h3>
+      <div id="speed"></div>
+
+      <h3>LFO Amount:</h3>
+      <div id="amount"></div>
+
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var playing = false,
+  channelCount = 2,
+  amount = 0.50,
+  osc,
+  device, 
+  reverb;
+
+var audioCallback = function(buffer, channels){
+  
+  if (playing) {
+
+    var length = buffer.length,
+      index,
+      sample,
+      i;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+
+      if (lfo.frequency !== 0 && amount !== 0) {
+        lfo.generate();
+        osc.fm = lfo.getMix() * amount;
+      }
+      osc.generate();
+
+      sample = osc.getMix();
+
+      for (i = 0; i < channels; i++){
+        buffer[index + i] = sample;
+      }
+      
+    }
+  }
+
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  osc = audioLib.Oscillator(device.sampleRate, 400);
+  lfo = audioLib.Oscillator(device.sampleRate, 1);
+  lfo.waveShape = 'pulse';
+
+
+  $('#play').click(function(){
+    playing = !playing;
+  });
+
+  amount = 0.50;
+
+  $('#speed').slider({
+    min: 0,
+    max: 50,
+    value: lfo.frequency,
+    step: 0.2,
+    slide: function( event, ui ) {
+      lfo.frequency = ui.value;
+      if (lfo.frequency === 0) {
+        osc.phase = 0;
+        osc.fm = 0;
+      }
+    }
+  });
+
+  $('#amount').slider({
+    min: 0,
+    max: 1.00,
+    value: amount,
+    step: 0.01,
+    slide: function( event, ui ) {
+      amount = ui.value;
+    }
+  });
+
+  $('#hz').slider({
+    min: 60,
+    max: 800,
+    value: amount,
+    step: 1,
+    slide: function( event, ui ) {
+      osc.frequency = ui.value;
+    }
+  });
+
+}, true);
+
+
+
+    </script>
+  </body>
+
+</html>

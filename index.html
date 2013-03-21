@@ -95,6 +95,18 @@
 							</tr>
 						</table>
 					</section>
+					<section>
+						<h2>Sample Pipeline</h2>
+
+						<div>
+							<span class="box">Generators (1 - n)</span> 
+							<span class="arrow">-&gt;</span> 
+							<span class="box">Effects / Processing</span>
+							<span class="arrow">-&gt;</span>
+							<span class="box">Output</span>
+						</div>
+					</section>
+
 				</section>
 
 				<section>
@@ -287,11 +299,21 @@ osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
 						<li>Data islands vs. files vs. HTTP</li>
 						<li>Beware of samples &gt;~ 500 KB</li> 
 					</ul>
-						<p><a href="demos/samples.html" target="_blank">demo</a></p>
+					<p><a href="demos/samples.html" target="_blank">demo</a></p>
 				</section>
 
 				<section>
-					<h2>Effects</h2>
+					<h2>Effects and Processing</h2>
+					<pre><code>var sample = 0;
+generator.generate();
+sample = generator.getMix();
+effect.pushSample(sample);
+sample += effect.getMix();</code></pre>
+					<p><a href="demos/effects.html" target="_blank">demo</a></p>
+				</section>
+
+				<section>
+					<h2>Automation</h2>
 				</section>
 
 				<section>

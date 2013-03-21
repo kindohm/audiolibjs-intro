@@ -17,3 +17,10 @@
   background-color: #f4e971;
   color: #000;
 }
+
+.box {
+  display: inline-block;
+  padding: 10px !important;
+  border: solid 3px #ccc !important;
+  margin: 10px !important;
+}
