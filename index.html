@@ -204,7 +204,7 @@ var audioCallback = function(buffer, channelCount) {
 
 device = audioLib.AudioDevice(audioCallback, channels);
 osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
-						<p><a href="demos/oscillator-single-channel.html">demo</a></p>
+						<p><a href="demos/oscillator-single-channel.html" target="_blank">demo</a></p>
 					</section>
 
 					<section>
@@ -222,7 +222,7 @@ osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
 
 }</code></pre>
 
-						<p><a href="demos/oscillator-dual-channels.html">demo</a></p>
+						<p><a href="demos/oscillator-dual-channels.html" target="_blank">demo</a></p>
 					</section>
 
 					<section>
@@ -247,7 +247,20 @@ osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
 
 						<h2>Frequency Modulation</h2>
 
-						<p><a href="demos/frequency-modulation.html">demo</a></p>
+						<pre><code>for (index = 0; index &lt; buffer.length; index += channels) {
+
+	lfo.generate();
+	osc.fm = lfo.getMix();
+	osc.generate();
+
+	sample = osc.getMix();
+
+	// fill buffer...
+
+}</code></pre>
+
+
+						<p><a href="demos/frequency-modulation.html" target="_blank">demo</a></p>
 
 					</section>
 
