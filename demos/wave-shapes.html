@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>wave shapes demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Wave Shapes Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+
+      <p>
+        <select id="shape">
+          <option value="sine">Sine</option>
+          <option value="sawtooth">Sawtooth</option>
+          <option value="invSawtooth">Inverted Sawtooth</option>
+          <option value="square">Square</option>
+          <option value="triangle">Triangle</option>
+          <option value="pulse">Pulse</option>
+        </select>
+      </p>
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script>
+
+var playing = false,
+  channelCount = 1,
+  device, 
+  osc;
+
+var audioCallback = function(buffer, channels){
+  if (playing) osc.append(buffer, channels);
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  osc = audioLib.Oscillator(device.sampleRate, 400);
+}, true);
+
+$('#play').click(function(){
+  playing = !playing;
+});
+
+
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>oscillator - dual channel demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Oscillator Dual Channel Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script>
+
+var playing = false,
+  channelCount = 2,
+  device, 
+  osc1, 
+  osc2;
+
+var audioCallback = function(buffer, channels){
+  if (playing) {
+
+    var length = buffer.length,
+      index,
+      leftSample,
+      rightSample;
+
+    for (index = 0; index < length; index += channels){
+      leftSample = rightSample = 0;
+      osc1.generate();
+      osc2.generate();
+      leftSample = osc1.getMix();
+      rightSample = osc2.getMix();
+
+      buffer[index] = leftSample;
+      buffer[index + 1] = rightSample;
+    }
+
+  }
+
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  osc1 = audioLib.Oscillator(device.sampleRate, 400);
+  osc2 = audioLib.Oscillator(device.sampleRate, 600);
+}, true);
+
+$('#play').click(function(){
+  playing = !playing;
+});
+
+
+
+    </script>
+  </body>
+
+</html>

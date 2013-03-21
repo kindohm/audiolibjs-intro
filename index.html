@@ -46,6 +46,11 @@
 				</section>
 
 				<section>
+					<h2>Why audio synthesis in the browser? *</h2>
+					<p><small>*hint: because it is freaking awesome</small></p>
+				</section>
+
+				<section>
 					<section>
 						<h2>A little digital audio theory</h2>
 						<ul>
@@ -94,14 +99,14 @@
 
 				<section>
 					<section>
-						<h2>Audio API's in Browsers</h2>
+						<h2>Audio API's in Browsers *</h2>
 						<ul>
 							<li><a href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html">Web Audio API</a> (webkit)</li>
 							<li><a href="https://wiki.mozilla.org/Audio_Data_API">Audio Data API</a> (mozilla)</li>
 						</ul>
 						<br/>
 						<br/>
-						<p>These are unrelated to the HTML5 &lt;audio&gt; object.</p>
+						<p>* Not the same as the HTML5 &lt;audio&gt; object.</p>
 					</section>
 
 					<section>
@@ -174,8 +179,70 @@ var audioCallback = function(buffer, channelCount) {
 
 device = audioLib.AudioDevice(audioCallback, channels);
 osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
-					<p><a href="demos/01-oscillator.html" target="_blank">demo</a></p>
 					</section>
+				</section>
+
+				<section>
+
+					<section>
+						<h2>Oscillators</h2>
+						<ul>
+							<li>Single and dual channel</li>
+							<li>Wave shapes</li>
+							<li>Frequency modulation</li>
+							<li>Addition and mixing</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Single Channel Oscillator</h2>
+						<pre><code>var osc, device, channels = 1;
+
+var audioCallback = function(buffer, channelCount) {
+	osc.append(buffer, channelCount);
+};
+
+device = audioLib.AudioDevice(audioCallback, channels);
+osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
+						<p><a href="demos/oscillator-single-channel.html">demo</a></p>
+					</section>
+
+					<section>
+						<h2>Multiple Channels</h2>
+						<pre><code>for (index = 0; index &lt; buffer.length; index += 2){
+
+  osc1.generate();
+  osc2.generate();
+
+  leftSample = osc1.getMix();
+  rightSample = osc2.getMix();
+
+  buffer[index] = leftSample;
+  buffer[index + 1] = rightSample;
+
+}</code></pre>
+
+						<p><a href="demos/oscillator-dual-channels.html">demo</a></p>
+					</section>
+
+					<section>
+
+						<h2>Wave Shapes</h2>
+
+						<ul>
+							<li>Sine</li>
+							<li>Sawtooth</li>
+							<li>Inverted Sawtooth</li>
+							<li>Square</li>
+							<li>Triangle</li>
+							<li>Pulse</li>
+						</ul>
+						<br/>
+						<br/>
+						<p><a href="demos/wave-shapes.html">demo</a></p>
+
+					</section>
+
 				</section>
 
 				<section>
