@@ -26,6 +26,15 @@
       <h3>LFO Amount:</h3>
       <div id="amount"></div>
 
+      <h3>Reverb Size:</h3>
+      <div id="reverbSize"></div>
+
+      <h3>Reverb Dry:</h3>
+      <div id="reverbDry"></div>
+
+      <h3>Reverb Wet:</h3>
+      <div id="reverbWet"></div>
+
     </div>
 
     <script src="../js/jquery-1.9.1.min.js"></script>
@@ -42,8 +51,6 @@ var playing = false,
 
 var audioCallback = function(buffer, channels){
   
-  if (playing) {
-
     var length = buffer.length,
       index,
       sample,
@@ -53,21 +60,28 @@ var audioCallback = function(buffer, channels){
 
       sample = 0;
 
-      if (lfo.frequency !== 0 && amount !== 0) {
-        lfo.generate();
-        osc.fm = lfo.getMix() * amount;
-      }
-      osc.generate();
+      if (playing) {
 
-      sample = osc.getMix();
+        if (lfo.frequency !== 0 && amount !== 0) {
+          lfo.generate();
+          osc.fm = lfo.getMix() * amount;
+        }
+        osc.generate();
 
-      for (i = 0; i < channels; i++){
-        buffer[index + i] = sample;
+        sample = osc.getMix();
       }
-      
-    }
+
+      reverb.pushSample(sample, 0);
+      reverb.pushSample(sample, 1);
+
+      buffer[index] = reverb.getMix(0);
+      buffer[index + 1] = reverb.getMix(1);
   }
 
+};
+
+var changeReverb = function(wet, dry, roomSize) {
+  reverb = audioLib.Reverb(device.sampleRate, 2, wet, dry, roomSize, .1);
 };
 
 window.addEventListener('load', function(){
@@ -76,6 +90,8 @@ window.addEventListener('load', function(){
   lfo = audioLib.Oscillator(device.sampleRate, 1);
   lfo.waveShape = 'pulse';
 
+  // sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride
+  reverb = audioLib.Reverb(device.sampleRate, 2, 0.00, 1.00, 0.00, .1);
 
   $('#play').click(function(){
     playing = !playing;
@@ -114,6 +130,36 @@ window.addEventListener('load', function(){
     step: 1,
     slide: function( event, ui ) {
       osc.frequency = ui.value;
+    }
+  });
+
+  $('#reverbSize').slider({
+    min: 0.00,
+    max: 1.00,
+    value: reverb.roomSize,
+    step: 0.01,
+    change: function( event, ui ) {
+      changeReverb(reverb.wet, reverb.dry, ui.value);
+    }
+  });
+
+  $('#reverbWet').slider({
+    min: 0.00,
+    max: 1.00,
+    value: reverb.wet,
+    step: 0.01,
+    change: function( event, ui ) {
+      changeReverb(ui.value, reverb.dry, reverb.wet);
+    }
+  });
+
+  $('#reverbDry').slider({
+    min: 0.00,
+    max: 1.00,
+    value: reverb.dry,
+    step: 0.01,
+    change: function( event, ui ) {
+      changeReverb(reverb.wet, ui.value, reverb.wet);
     }
   });
 
