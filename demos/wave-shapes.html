@@ -50,6 +50,10 @@ $('#play').click(function(){
   playing = !playing;
 });
 
+$('#shape').change(function(){
+  osc.waveShape = $(this).val();
+});
+
 
     </script>
   </body>
