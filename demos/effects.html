@@ -17,6 +17,8 @@
 
       <p><button id="play">Play / Pause</button></p>
 
+      <p><button id="sample">Trigger Sample</button></p>
+
       <h3>Oscillator Hz:</h3>
       <div id="hz"></div>
 
@@ -40,11 +42,13 @@
     <script src="../js/jquery-1.9.1.min.js"></script>
     <script src="../js/audiolib.min.js"></script>
     <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script src="samples/thatsright.js"></script>
     <script>
 
 var playing = false,
   channelCount = 2,
   amount = 0.50,
+  sampler,
   osc,
   device, 
   reverb;
@@ -60,6 +64,9 @@ var audioCallback = function(buffer, channels){
 
       sample = 0;
 
+      sampler.generate();
+      sample = sampler.getMix();
+
       if (playing) {
 
         if (lfo.frequency !== 0 && amount !== 0) {
@@ -68,7 +75,7 @@ var audioCallback = function(buffer, channels){
         }
         osc.generate();
 
-        sample = osc.getMix();
+        sample += osc.getMix();
       }
 
       reverb.pushSample(sample, 0);
@@ -87,6 +94,11 @@ var changeReverb = function(wet, dry, roomSize) {
 window.addEventListener('load', function(){
   device = audioLib.AudioDevice(audioCallback, channelCount);
   osc = audioLib.Oscillator(device.sampleRate, 400);
+  sampler = audioLib.Sampler(device.sampleRate);
+
+  var sample = atob(thatsright);
+  sampler.loadWav(sample, true);
+
   lfo = audioLib.Oscillator(device.sampleRate, 1);
   lfo.waveShape = 'pulse';
 
@@ -95,6 +107,10 @@ window.addEventListener('load', function(){
 
   $('#play').click(function(){
     playing = !playing;
+  });
+
+  $('#sample').click(function(){
+    sampler.noteOn(440);
   });
 
   amount = 0.50;
