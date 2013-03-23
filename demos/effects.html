@@ -15,7 +15,7 @@
 
       <h1>Effects Demo</h1>
 
-      <p><button id="play">Play / Pause</button></p>
+      <p><button id="play">Play / Pause Oscillator</button></p>
 
       <p><button id="sample">Trigger Sample</button></p>
 
@@ -63,6 +63,24 @@
           <div id="master"></div>
         </div>
 
+        <h3>Low Pass Filter</h3>
+        <div>
+          <h4>Cutoff:</h4>
+          <div id="lpCutoff"></div>
+
+          <h4>Resonance:</h4>
+          <div id="lpResonance"></div>
+        </div>
+
+        <h3>High Pass Filter</h3>
+        <div>
+          <h4>Cutoff:</h4>
+          <div id="hpCutoff"></div>
+
+          <h4>Resonance:</h4>
+          <div id="hpResonance"></div>
+        </div>
+
       </div>
     </div>
 
@@ -80,7 +98,8 @@ var playing = false,
   device, 
   reverb,
   delay,
-  distortion;
+  distortion,
+  lowPass;
 
 var audioCallback = function(buffer, channels){
   
@@ -93,33 +112,53 @@ var audioCallback = function(buffer, channels){
 
       sample = 0;
 
+      // first, create a sample from the sampler
       sampler.generate();
       sample = sampler.getMix() * .6;
 
+      // next, get a sample from the oscillator
       if (playing) {
 
+        // only apply LFO if LFO Hz and Amount are not zero
         if (lfo.frequency !== 0 && amount !== 0) {
           lfo.generate();
           osc.fm = lfo.getMix() * amount;
         }
         osc.generate();
 
-        sample += osc.getMix() * .6;
+        // append oscillator sample to any existing sample data
+        sample += osc.getMix() * .5;
       }
 
+      // distortion effect
       if (distortion.gain !== 0.00 && distortion.master !== 0.00){
         distortion.pushSample(sample);
         sample = distortion.getMix();
       }
 
+      // low pass filter
+      if (lowPass.resonance !== 0.00) {
+        lowPass.pushSample(sample);
+        sample = lowPass.getMix();
+      }
+
+      // high pass filter
+      if (highPass.resonance !== 0.00) {
+        highPass.pushSample(sample);
+        sample = highPass.getMix();
+      }
+
+      // delay effect
       if (delay.time !== 0.00 && delay.feedback !== 0.00){
         delay.pushSample(sample);
         sample += delay.getMix() * .5;
       }
 
+      // stereo reverb
       reverb.pushSample(sample, 0);
       reverb.pushSample(sample, 1);
 
+      // output buffer equals the reverb output
       buffer[index] = reverb.getMix(0);
       buffer[index + 1] = reverb.getMix(1);
   }
@@ -145,9 +184,16 @@ window.addEventListener('load', function(){
   // delay ctor: sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride
   reverb = audioLib.Reverb(device.sampleRate, 2, 0.00, 1.00, 0.00, .1);
   delay = audioLib.Delay(device.sampleRate, 0.00, 0.00);
+
   distortion = audioLib.Distortion(device.sampleRate);
-  distortion.gain = 0.00;
+  distortion.gain = 0.00; 
   distortion.master = 0.00;
+
+  lowPass = audioLib.IIRFilter(device.sampleRate, 5000, 0.00, 0);
+  lowPass.resonance = 0.00; // bug: resonance param in ctor doesn't work
+
+  highPass = audioLib.IIRFilter(device.sampleRate, 40, 0.00, 1);
+  highPass.resonance = 0.00; // bug: resonance param in ctor doesn't work
 
   setUpUI();
 
@@ -269,6 +315,46 @@ var setUpUI = function(){
     step: 0.1,
     slide: function( event, ui ) {
       distortion.master = ui.value;
+    }
+  });
+
+  $('#lpCutoff').slider({
+    min: 40,
+    max: 5000,
+    value: lowPass.cutoff,
+    step: 1,
+    slide: function( event, ui ) {
+      lowPass.cutoff = ui.value;
+    }
+  });
+
+  $('#lpResonance').slider({
+    min: 0.00,
+    max: 1.00,
+    value: lowPass.resonance,
+    step: 0.01,
+    slide: function( event, ui ) {
+      lowPass.resonance = ui.value;
+    }
+  });
+
+  $('#hpCutoff').slider({
+    min: 40,
+    max: 5000,
+    value: highPass.cutoff,
+    step: 1,
+    slide: function( event, ui ) {
+      highPass.cutoff = ui.value;
+    }
+  });
+
+  $('#hpResonance').slider({
+    min: 0.00,
+    max: 1.00,
+    value: highPass.resonance,
+    step: 0.01,
+    slide: function( event, ui ) {
+      highPass.resonance = ui.value;
     }
   });
 
