@@ -6,7 +6,7 @@
     <title>effects demo</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/demos.css">
-    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-darkness/jquery-ui-1.10.2.custom.css">
   </head>
 
   <body>
@@ -37,6 +37,11 @@
       <h3>Reverb Wet:</h3>
       <div id="reverbWet"></div>
 
+      <h3>Delay Time:</h3>
+      <div id="delayTime"></div>
+
+      <h3>Delay Feedback:</h3>
+      <div id="delayFeedback"></div>
     </div>
 
     <script src="../js/jquery-1.9.1.min.js"></script>
@@ -51,7 +56,8 @@ var playing = false,
   sampler,
   osc,
   device, 
-  reverb;
+  reverb,
+  delay;
 
 var audioCallback = function(buffer, channels){
   
@@ -65,7 +71,7 @@ var audioCallback = function(buffer, channels){
       sample = 0;
 
       sampler.generate();
-      sample = sampler.getMix();
+      sample = sampler.getMix() * .6;
 
       if (playing) {
 
@@ -75,8 +81,11 @@ var audioCallback = function(buffer, channels){
         }
         osc.generate();
 
-        sample += osc.getMix();
+        sample += osc.getMix() * .6;
       }
+
+      delay.pushSample(sample);
+      sample += delay.getMix() * .5;
 
       reverb.pushSample(sample, 0);
       reverb.pushSample(sample, 1);
@@ -92,10 +101,11 @@ var changeReverb = function(wet, dry, roomSize) {
 };
 
 window.addEventListener('load', function(){
+
   device = audioLib.AudioDevice(audioCallback, channelCount);
   osc = audioLib.Oscillator(device.sampleRate, 400);
-  sampler = audioLib.Sampler(device.sampleRate);
 
+  sampler = audioLib.Sampler(device.sampleRate);
   var sample = atob(thatsright);
   sampler.loadWav(sample, true);
 
@@ -104,6 +114,8 @@ window.addEventListener('load', function(){
 
   // sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride
   reverb = audioLib.Reverb(device.sampleRate, 2, 0.00, 1.00, 0.00, .1);
+
+  delay = audioLib.Delay(device.sampleRate, 500, .5);
 
   $('#play').click(function(){
     playing = !playing;
@@ -176,6 +188,26 @@ window.addEventListener('load', function(){
     step: 0.01,
     change: function( event, ui ) {
       changeReverb(reverb.wet, ui.value, reverb.wet);
+    }
+  });
+
+  $('#delayTime').slider({
+    min: 0.05,
+    max: 1000,
+    value: delay.time,
+    step: 0.01,
+    change: function( event, ui ) {
+      delay.time = ui.value;
+    }
+  });
+
+  $('#delayFeedback').slider({
+    min: 0.00,
+    max: 1.00,
+    value: delay.feedback,
+    step: 0.01,
+    change: function( event, ui ) {
+      delay.feedback = ui.value;
     }
   });
 
