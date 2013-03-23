@@ -6,7 +6,7 @@
     <title>effects demo</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/demos.css">
-    <link rel="stylesheet" href="jquery-ui/css/ui-darkness/jquery-ui-1.10.2.custom.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
   </head>
 
   <body>
@@ -19,29 +19,51 @@
 
       <p><button id="sample">Trigger Sample</button></p>
 
-      <h3>Oscillator Hz:</h3>
-      <div id="hz"></div>
+      <div id="accordion">
 
-      <h3>LFO Speed:</h3>
-      <div id="speed"></div>
+        <h3>Oscillator Controls</h3>
+        <div>
+          <h4>Oscillator Hz:</h4>
+          <div id="hz"></div>
 
-      <h3>LFO Amount:</h3>
-      <div id="amount"></div>
+          <h4>LFO Speed:</h4>
+          <div id="speed"></div>
 
-      <h3>Reverb Size:</h3>
-      <div id="reverbSize"></div>
+          <h4>LFO Amount:</h4>
+          <div id="amount"></div>
+        </div>
 
-      <h3>Reverb Dry:</h3>
-      <div id="reverbDry"></div>
+        <h3>Reverb</h3>
+        <div>
+          <h4>Reverb Size:</h4>
+          <div id="reverbSize"></div>
 
-      <h3>Reverb Wet:</h3>
-      <div id="reverbWet"></div>
+          <h4>Reverb Dry:</h4>
+          <div id="reverbDry"></div>
 
-      <h3>Delay Time:</h3>
-      <div id="delayTime"></div>
+          <h4>Reverb Wet:</h4>
+          <div id="reverbWet"></div>
+        </div>
 
-      <h3>Delay Feedback:</h3>
-      <div id="delayFeedback"></div>
+        <h3>Delay</h3>
+        <div>
+          <h4>Delay Time:</h4>
+          <div id="delayTime"></div>
+
+          <h4>Delay Feedback:</h4>
+          <div id="delayFeedback"></div>
+        </div>
+
+        <h3>Distortion</h3>
+        <div>
+          <h4>Gain:</h4>
+          <div id="gain"></div>
+
+          <h4>Master:</h4>
+          <div id="master"></div>
+        </div>
+
+      </div>
     </div>
 
     <script src="../js/jquery-1.9.1.min.js"></script>
@@ -57,7 +79,8 @@ var playing = false,
   osc,
   device, 
   reverb,
-  delay;
+  delay,
+  distortion;
 
 var audioCallback = function(buffer, channels){
   
@@ -84,8 +107,15 @@ var audioCallback = function(buffer, channels){
         sample += osc.getMix() * .6;
       }
 
-      delay.pushSample(sample);
-      sample += delay.getMix() * .5;
+      if (distortion.gain !== 0.00 && distortion.master !== 0.00){
+        distortion.pushSample(sample);
+        sample = distortion.getMix();
+      }
+
+      if (delay.time !== 0.00 && delay.feedback !== 0.00){
+        delay.pushSample(sample);
+        sample += delay.getMix() * .5;
+      }
 
       reverb.pushSample(sample, 0);
       reverb.pushSample(sample, 1);
@@ -112,11 +142,18 @@ window.addEventListener('load', function(){
   lfo = audioLib.Oscillator(device.sampleRate, 1);
   lfo.waveShape = 'pulse';
 
-  // sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride
+  // delay ctor: sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride
   reverb = audioLib.Reverb(device.sampleRate, 2, 0.00, 1.00, 0.00, .1);
+  delay = audioLib.Delay(device.sampleRate, 0.00, 0.00);
+  distortion = audioLib.Distortion(device.sampleRate);
+  distortion.gain = 0.00;
+  distortion.master = 0.00;
 
-  delay = audioLib.Delay(device.sampleRate, 500, .5);
+  setUpUI();
 
+}, true);
+
+var setUpUI = function(){
   $('#play').click(function(){
     playing = !playing;
   });
@@ -126,6 +163,10 @@ window.addEventListener('load', function(){
   });
 
   amount = 0.50;
+
+  $('#accordion').accordion({
+    heightStyle: "content"
+  });
 
   $('#speed').slider({
     min: 0,
@@ -196,7 +237,7 @@ window.addEventListener('load', function(){
     max: 1000,
     value: delay.time,
     step: 0.01,
-    change: function( event, ui ) {
+    slide: function( event, ui ) {
       delay.time = ui.value;
     }
   });
@@ -206,13 +247,32 @@ window.addEventListener('load', function(){
     max: 1.00,
     value: delay.feedback,
     step: 0.01,
-    change: function( event, ui ) {
+    slide: function( event, ui ) {
       delay.feedback = ui.value;
     }
   });
 
-}, true);
+  $('#gain').slider({
+    min: 0.00,
+    max: 10,
+    value: distortion.gain,
+    step: 0.1,
+    slide: function( event, ui ) {
+      distortion.gain = ui.value;
+    }
+  });
 
+  $('#master').slider({
+    min: 0.00,
+    max: 10,
+    value: distortion.master,
+    step: 0.1,
+    slide: function( event, ui ) {
+      distortion.master = ui.value;
+    }
+  });
+
+};
 
 
     </script>
