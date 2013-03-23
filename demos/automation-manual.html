@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>automation (manual) demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Automation (Manual) Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+
+      <div id="accordion">
+        <h3>Oscillator Shape:</h3>
+        <div>
+          <p>
+            <select id="oscShape">
+              <option value="sine">Sine</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="invSawtooth">Inverted Sawtooth</option>
+              <option value="square">Square</option>
+              <option value="triangle">Triangle</option>
+              <option value="pulse">Pulse</option>
+            </select>
+          </p>
+
+          <h4>Hz:</h4>
+          <div id="hz"></div>
+        </div>
+        <h3>LFO #1</h3>
+        <div>
+          <h4>LFO #1 Shape:</h4>
+          <p>
+            <select id="lfo1Shape">
+              <option value="sine">Sine</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="invSawtooth">Inverted Sawtooth</option>
+              <option value="square">Square</option>
+              <option value="triangle">Triangle</option>
+              <option value="pulse">Pulse</option>
+            </select>
+          </p>
+
+          <h4>LFO #1 Speed:</h4>
+          <div id="lfo1Speed"></div>
+
+          <h4>LFO #1 Amount:</h4>
+          <div id="lfo1Amount"></div>
+        </div>
+
+        <h3>LFO #2</h3>
+        <div>
+          <h4>LFO #2 Shape:</h4>
+          <p>
+            <select id="lfo2Shape">
+              <option value="sine">Sine</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="invSawtooth">Inverted Sawtooth</option>
+              <option value="square">Square</option>
+              <option value="triangle">Triangle</option>
+              <option value="pulse">Pulse</option>
+            </select>
+          </p>
+
+          <h4>LFO #2 Speed:</h4>
+          <div id="lfo2Speed"></div>
+
+          <h4>LFO #2 Amount:</h4>
+          <div id="lfo2Amount"></div>
+        </div>
+
+        <h3>Low Pass (wub)</h3>
+        <div>
+          <h4>Wub Shape:</h4>
+          <p>
+            <select id="wubShape">
+              <option value="sine">Sine</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="invSawtooth">Inverted Sawtooth</option>
+              <option value="square">Square</option>
+              <option value="triangle">Triangle</option>
+              <option value="pulse">Pulse</option>
+            </select>
+          </p>
+          <h4>Cutoff Wub Speed</h4>
+          <div id="wub"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.min.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var playing = false,
+  channelCount = 1,
+  device, 
+  osc,
+  lfo1,
+  lfo1Amount = 0.00,
+  lfo2,
+  lfo2Amount = 0.00,
+  wubLfo,
+  lowPass;
+
+var audioCallback = function(buffer, channels){
+  
+  var length = buffer.length / channels;
+
+  if (playing) {
+
+    var length = buffer.length,
+      index,
+      sample,
+      i;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+
+      osc.generate();
+
+      // LFO the LFO
+      if (lfo1Amount !== 0) {
+        lfo1.generate();
+        lfo2.fm = lfo1.getMix() * lfo1Amount;
+      }
+
+      // LFO the oscillator
+      if (lfo2Amount !== 0) {
+        lfo2.generate();
+        osc.fm = lfo2.getMix() * lfo2Amount;
+      }
+
+      // oscillator
+      sample = osc.getMix();
+
+      // low pass filter
+      wubLfo.generate();
+      lowPass.cutoff = 6000 * ((wubLfo.getMix() + 1) / 2);
+      lowPass.pushSample(sample);
+      sample = lowPass.getMix();
+
+      for (i = 0; i < channels; i++){
+        buffer[index + i] = sample;
+      }
+    }
+
+  }
+
+};
+
+window.addEventListener('load', function(){
+
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+
+  osc = audioLib.Oscillator(device.sampleRate, 220);
+  lfo1 = audioLib.Oscillator(device.sampleRate, 0);
+  lfo2 = audioLib.Oscillator(device.sampleRate, 0);
+
+  wubLfo = audioLib.Oscillator(device.sampleRate, 2);
+  lowPass = audioLib.IIRFilter(device.sampleRate, 6000, 0.05, 0);
+  lowPass.resonance = 0.05; 
+
+  $('#accordion').accordion({
+    heightStyle: 'content'
+  });
+
+  $('#lfo1Speed').slider({
+    min: 0,
+    max: 100,
+    value: lfo1.frequency,
+    step: 0.5,
+    slide: function( event, ui ) {
+      lfo1.frequency = ui.value;
+    }
+  });
+
+  $('#lfo1Amount').slider({
+    min: 0,
+    max: 1,
+    value: lfo1Amount,
+    step: 0.01,
+    slide: function( event, ui ) {
+      lfo1Amount = ui.value;
+    }
+  });
+
+  $('#lfo2Speed').slider({
+    min: 0,
+    max: 100,
+    value: lfo2.frequency,
+    step: 0.5,
+    slide: function( event, ui ) {
+      lfo2.frequency = ui.value;
+    }
+  });
+
+  $('#lfo2Amount').slider({
+    min: 0,
+    max: 1,
+    value: lfo2Amount,
+    step: 0.01,
+    slide: function( event, ui ) {
+      lfo2Amount = ui.value;
+    }
+  });
+
+  $('#wub').slider({
+    min: 0,
+    max: 5,
+    value: wubLfo.frequency,
+    step: 0.01,
+    slide: function( event, ui ) {
+      wubLfo.frequency = ui.value;
+    }
+  });
+
+  $('#hz').slider({
+    min: 40,
+    max: 440,
+    value: osc.frequency,
+    step: 0.01,
+    slide: function( event, ui ) {
+      osc.frequency = ui.value;
+    }
+  });
+
+  $('#play').click(function(){
+    playing = !playing;
+  });
+
+  $('#lfo1Shape').change(function(){
+    lfo1.waveShape = $(this).val();
+  });
+
+  $('#lfo2Shape').change(function(){
+    lfo2.waveShape = $(this).val();
+  });
+
+  $('#oscShape').change(function(){
+    osc.waveShape = $(this).val();
+  });
+
+  $('#wubShape').change(function(){
+    wubLfo.waveShape = $(this).val();
+  });
+
+}, true);
+
+
+
+    </script>
+  </body>
+
+</html>
