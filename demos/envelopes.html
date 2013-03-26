@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>envelope demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Envelope Demo</h1>
+
+      <h3>Attack:</h3>
+      <div id="attack"></div>
+
+      <h3>Release:</h3>
+      <div id="release"></div>
+
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var channelCount = 1,
+  device,
+  attack = 1, 
+  release = 1,
+  voices = [];
+
+var audioCallback = function(buffer, channels){
+  
+  if (voices.length > 0) {
+
+    var length = buffer.length,
+      index,
+      sample,
+      i,
+      v,
+      voiceIndex;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+
+      for (voiceIndex = 0; voiceIndex < voices.length; voiceIndex++){
+        voices[voiceIndex].generate();
+        sample += voices[voiceIndex].getMix() / 2;
+      }
+
+      for (i = 0; i < channels; i++){
+        buffer[index + i] = sample;
+      }
+
+      // clean up finished voices
+      for (v = voices.length - 1; v >= 0; v--){
+        if (voices[v].finished){
+            console.log('splicing ' + voices[v].frequency);
+            voices.splice(v, 1);
+        }
+      }
+
+    }
+  }
+
+};
+
+var getNote = function(key){
+  if (key === 49) return 'C4';
+  else if (key === 50) return 'D4';
+  else if (key === 51) return 'Eb4';
+  else if (key === 52) return 'F4';
+  else if (key === 53) return 'G4';
+  else if (key === 54) return 'Ab4';
+  else if (key === 55) return 'Bb4';
+  else if (key === 56) return 'C5';
+  else return 'X';
+};
+
+var getFrequency = function(note) {
+  if (note === 'C4') return 261.626;
+  if (note === 'D4') return 293.665;
+  if (note === 'Eb4') return 311.127;
+  if (note === 'F4') return 349.228;
+  if (note === 'G4') return 391.995;
+  if (note === 'Ab4') return 415.305;
+  if (note === 'Bb4') return 466.164;
+  if (note === 'C5') return 523.251; 
+  return 0;
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  voice = audioLib.generators.Voice(audioCallback, 440);
+
+  $(document).keydown(function(k){
+    var note = getNote(k.which);
+    var hz = getFrequency(note);
+    var found = false;
+    for (var i = 0; i < voices.length; i++) {
+      if (voices[i].frequency === hz) found = true;
+    }
+    if (!found) {
+      var voice = new Voice(device.sampleRate, hz, attack, release);
+      voices.push(voice);
+    }
+  });
+
+  $(document).keyup(function(k){
+    var note = getNote(k.which);
+    var hz = getFrequency(note)
+    for (var i = 0; i < voices.length; i++){
+      if (voices[i].frequency === hz){
+        voices[i].stop();
+      }
+    }
+  });  
+
+  $('#attack').slider({
+    min: 1,
+    max: 500,
+    value: attack,
+    change: function(event, ui){
+      attack = ui.value;
+    }
+  });
+
+  $('#release').slider({
+    min: 1,
+    max: 3000,
+    value: release,
+    change: function(event, ui){
+      release = ui.value;
+    }
+  });
+}, true);
+
+
+function Voice(sampleRate, frequency, attack, release){
+
+  this.sampleRate = sampleRate;
+  this.frequency = frequency;
+  this.samplesLeft = 0;
+
+  this.osc1 = audioLib.Oscillator(sampleRate, frequency);
+  this.lfo1 = audioLib.Oscillator(sampleRate, 200);
+
+  this.lfo1.frequency = this.osc1.frequency * 2;
+
+  this.lfo1.waveShape = 'square';
+
+  // sampleRate, attack, decay, sustain, release, sustainTime, releaseTime
+  this.envelope = audioLib.ADSREnvelope(sampleRate, attack, 1, 1, release, null, null);
+
+  this.sample = 0;
+  this.releasing = false;
+  this.finished = false;
+
+  this.envelope.triggerGate(true);
+
+}
+
+Voice.prototype = {
+  samplesLeft: 0,
+  releasing: false,
+  finished: false,
+  smpleRate: 44100,
+  frequency: 440,
+  osc1: null,
+  lfo1: null,
+  envelope: null,
+  sample: 0,
+  generate: function(){
+    this.sample = 0;
+
+    if (!this.finished){
+      this.osc1.generate();
+      this.lfo1.generate();
+
+      this.osc1.fm = this.lfo1.getMix();
+
+      this.sample = this.osc1.getMix();
+    }
+
+    this.envelope.generate();
+    this.sample = this.sample * this.envelope.getMix();
+
+    if (this.sample === 0){
+      this.finished = true;
+      this.generate = this._generate;
+    }
+
+  },
+  getMix: function(){
+    return this.sample;
+  },
+  stop: function(){
+    this.releasing = true;
+    this.envelope.state = 3;
+    //this.envelope.triggerGate(false);
+  },
+  _generate: function(){
+    // do nothing
+  }
+};
+
+// inherit from the audiolib.js Generator class
+audioLib.generators('Voice', Voice);
+
+    </script>
+  </body>
+
+</html>
