@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>custom generators demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>Custom Generators Demo</h1>
+
+      <p><button id="play">Play / Pause</button></p>
+
+
+    </div>
+
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var playing = false,
+  amount = 0,
+  channelCount = 2,
+  device,
+  voice;
+
+var audioCallback = function(buffer, channels){
+  
+  if (playing) {
+
+    var length = buffer.length,
+      index,
+      sample,
+      i;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+      voice.generate();
+
+      for (i = 0; i < channels; i++){
+        sample = voice.getMix(i);
+        buffer[index + i] = sample;
+      }
+      
+    }
+  }
+
+};
+
+window.addEventListener('load', function(){
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  voice = audioLib.generators.Voice(audioCallback, 440);
+
+  $('#play').click(function(){
+    playing = !playing;
+  });
+
+}, true);
+
+
+function Voice (sampleRate, frequency) {
+
+  this.sampleRate = isNaN(sampleRate) || sampleRate === null ? this.sampleRate : sampleRate;
+  this.frequency = isNaN(frequency) || frequency === null ? this.frequency : frequency;
+
+  this.osc = audioLib.Oscillator(this.sampleRate, this.frequency * 2);
+  this.lfo = audioLib.Oscillator(this.sampleRate, this.frequency * 2.8);
+
+  this.lfo.waveShape = 'triangle';
+
+  this.reverb = audioLib.Reverb(this.sampleRate, 2, .5, .5, .8);
+
+  this.sample = 0;
+  this.samplesLeft = 21000;
+  this.voiceLength = 7000;
+  this.wait = 21000;
+}
+
+Voice.prototype = {
+  sampleRate: 44100,
+  frequency:  440,
+  samplesLeft: 0,
+  voiceLength: 0,
+  wait: 0,
+  sample: 0,
+  mix:    0.5,
+  osc:    null,
+  lfo:    null,
+  reverb: null,
+
+  generate: function () {
+
+    this.sample = 0;
+    if (--this.voiceLength > 0){
+      this.lfo.generate();
+      this.osc.fm = this.lfo.getMix();
+      this.osc.generate();
+      this.sample = this.osc.getMix();
+    }
+
+    this.reverb.pushSample(this.sample, 0);
+    this.reverb.pushSample(this.sample, 1);
+
+    if (--this.samplesLeft <= 0) {
+      this.wait--;
+    }
+
+    if (this.wait <= 0) {
+      this.samplesLeft = 21000;
+      this.voiceLength = 7000;
+      this.wait = 21000;
+    }
+
+  },
+
+  getMix: function (ch) {
+    return this.reverb.getMix(ch);
+  },
+
+  _generate: function(){},
+
+};
+
+// inherit from the audiolib.js Generator class
+audioLib.generators('Voice', Voice);
+
+    </script>
+  </body>
+
+</html>

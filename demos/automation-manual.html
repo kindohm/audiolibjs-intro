@@ -129,25 +129,27 @@ var audioCallback = function(buffer, channels){
       osc.generate();
 
       // LFO the LFO
-      if (lfo1Amount !== 0) {
-        lfo1.generate();
-        lfo2.fm = lfo1.getMix() * lfo1Amount;
+      if (lfo2Amount !== 0) {
+        lfo2.generate();
+        lfo1.fm = lfo2.getMix() * lfo2Amount;
       }
 
       // LFO the oscillator
-      if (lfo2Amount !== 0) {
-        lfo2.generate();
-        osc.fm = lfo2.getMix() * lfo2Amount;
+      if (lfo1Amount !== 0) {
+        lfo1.generate();
+        osc.fm = lfo1.getMix() * lfo1Amount;
       }
 
       // oscillator
       sample = osc.getMix();
 
       // low pass filter
-      wubLfo.generate();
-      lowPass.cutoff = 6000 * ((wubLfo.getMix() + 1) / 2);
-      lowPass.pushSample(sample);
-      sample = lowPass.getMix();
+      if (wubLfo.frequency !== 0.00) {
+        wubLfo.generate();
+        lowPass.cutoff = 6000 * ((wubLfo.getMix() + 1) / 2);
+        lowPass.pushSample(sample);
+        sample = lowPass.getMix();
+      }
 
       for (i = 0; i < channels; i++){
         buffer[index + i] = sample;
@@ -166,7 +168,7 @@ window.addEventListener('load', function(){
   lfo1 = audioLib.Oscillator(device.sampleRate, 0);
   lfo2 = audioLib.Oscillator(device.sampleRate, 0);
 
-  wubLfo = audioLib.Oscillator(device.sampleRate, 2);
+  wubLfo = audioLib.Oscillator(device.sampleRate, 0.00);
   lowPass = audioLib.IIRFilter(device.sampleRate, 6000, 0.05, 0);
   lowPass.resonance = 0.05; 
 
