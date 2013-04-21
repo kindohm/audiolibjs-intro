@@ -83,8 +83,11 @@ var audioCallback = function(buffer, channels){
 
 var getFrequency = function(note) {
   if (note === 'X') return 0;
+  if (note === 'G2') return 97.9989;
+  if (note === 'Ab2') return 103.826;
   if (note === 'C3') return 130.813;
   if (note === 'D3') return 146.832;
+  if (note === 'Eb3') return 155.563;
   if (note === 'E3') return 164.814;
   if (note === 'F3') return 174.614;
   if (note === 'Gb3') return 184.997;
@@ -121,7 +124,7 @@ var getFrequency = function(note) {
 
 window.addEventListener('load', function(){
 
-  var stepLength = 130;
+  var stepLength = 150;
   var seq0Steps = [];
   var seq1Steps = [];
   var seq2Steps = [];

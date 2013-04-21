@@ -845,4 +845,200 @@ var groundTheme = [
     dur: 1/4
   },
 
+  {
+    freqs: ['Ab2', 'Ab4', 'C5'],  // coda
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Eb3', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Ab3', 'Bb4', 'D5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['A3', 'G4', 'E5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'E4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['C3', 'E4', 'A4'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'C4', 'G4'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['G2', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+
+
+  {
+    freqs: ['Ab2', 'Ab4', 'C5'], 
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Eb3', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Ab3', 'Bb4', 'D5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'G4', 'E5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['G3', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['C3', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['G2', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+
+  {
+    freqs: ['Ab2', 'Ab4', 'C5'],  // coda
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Eb3', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'Ab4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['Ab3', 'Bb4', 'D5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['A3', 'G4', 'E5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'E4', 'C5'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['C3', 'E4', 'A4'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'C4', 'G4'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['G2', 'X', 'X'],  
+    dur: 1/4
+  },
+  {
+    freqs: ['X', 'X', 'X'],  
+    dur: 1/4
+  }
+
 ];
