@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>step sequencer demo</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/demos.css">
+    <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <h1>StepSequencer Demo</h1>
+
+      <p><button id="playButton">Play/Pause</button></p>
+
+
+    </div>
+
+    <script src="songs/groundTheme.js"></script>
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/audiolib.js"></script>
+    <script src="jquery-ui/js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script>
+
+var channelCount = 1,
+  device,
+  sequencers = [],
+  song,
+  playing = false,
+  oscs = [],
+  samplesLeft = 0,
+  currentStepIndex = null;
+
+var audioCallback = function(buffer, channels){
+  
+    if (!playing) return;
+
+    var length = buffer.length,
+      index,
+      sample,
+      i, 
+      o;
+
+    for (index = 0; index < length; index += channels) {
+
+      sample = 0;
+
+      for (o = 0; o < sequencers.length; o++){
+        sequencers[o].generate();
+      }
+
+      if (sequencers[0].step !== currentStepIndex) {
+        samplesLeft = 5000;
+        currentStepIndex = sequencers[0].step;
+        for(o = 0; o < sequencers.length; o++) {
+          oscs[o].frequency = sequencers[o].getMix();
+        }
+        console.log(oscs[0].frequency + ', ' + oscs[1].frequency + ', ' + oscs[2].frequency);
+      }
+
+      if (samplesLeft >= 0){
+        for (o = 0; o < oscs.length; o++){        
+          if (oscs[o].frequency !== 0) {
+            oscs[o].generate();
+            sample += oscs[o].getMix() * 0.333;
+          }
+        }
+
+        samplesLeft -= 1;
+      }
+
+      for (var x = 0; x < channels; x++){
+        buffer[index + x] = sample;
+      }
+
+
+    }
+};
+
+var getFrequency = function(note) {
+  if (note === 'X') return 0;
+  if (note === 'G2') return 97.9989;
+  if (note === 'Ab2') return 103.826;
+  if (note === 'C3') return 130.813;
+  if (note === 'D3') return 146.832;
+  if (note === 'Eb3') return 155.563;
+  if (note === 'E3') return 164.814;
+  if (note === 'F3') return 174.614;
+  if (note === 'Gb3') return 184.997;
+  if (note === 'G3') return 195.998;
+  if (note === 'Ab3') return 207.652;
+  if (note === 'A3') return 220.000;
+  if (note === 'Bb3') return 233.082;
+  if (note === 'B3') return 246.942;
+  if (note === 'C4') return 261.626;
+  if (note === 'Db4') return 277.183;
+  if (note === 'D4') return 293.665;
+  if (note === 'E4') return 329.628;
+  if (note === 'F4') return 349.228;
+  if (note === 'F#4') return 369.994;
+  if (note === 'G4') return 391.995;
+  if (note === 'Ab4') return 415.305;
+  if (note === 'A4') return 440.000;
+  if (note === 'B4') return 493.883;
+  if (note === 'Bb4') return 466.164;
+  if (note === 'C5') return 523.251; 
+  if (note === 'D5') return 587.330; 
+  if (note === 'Eb5') return 622.254; 
+  if (note === 'E5') return 659.255; 
+  if (note === 'F5') return 698.456; 
+  if (note === 'Gb5') return 739.989; 
+  if (note === 'G5') return 783.991; 
+  if (note === 'A5') return 880.000; 
+  if (note === 'B5') return 987.767; 
+  if (note === 'C6') return 1046.50; 
+
+  console.log('no note found for ' + note);
+  return 0;
+};
+
+window.addEventListener('load', function(){
+
+  var stepLength = 150;
+  var seq0Steps = [];
+  var seq1Steps = [];
+  var seq2Steps = [];
+
+  for (var i = 0; i < groundTheme.length; i++){
+    var step = groundTheme[i];
+    seq0Steps.push(getFrequency(step.freqs[0]));
+    seq1Steps.push(getFrequency(step.freqs[1]));
+    seq2Steps.push(getFrequency(step.freqs[2]));
+  }
+
+  device = audioLib.AudioDevice(audioCallback, channelCount);
+  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq0Steps, 0.0));
+  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq1Steps, 0.0));
+  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq2Steps, 0.0));
+
+  for (var i = 0; i < 3; i++){
+    var osc = audioLib.Oscillator(device.sampleRate, 0);
+    osc.waveShape = 'square';
+    oscs.push(osc);
+  }
+
+  $('#playButton').click(function(){
+    playing = !playing;
+  });
+
+}, true);
+
+
+
+
+    </script>
+  </body>
+
+</html>
