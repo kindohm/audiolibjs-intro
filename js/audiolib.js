@@ -2473,12 +2473,14 @@ function StepSequencer (sampleRate, stepLength, steps, attack) {
 	this.stepLength		= isNaN(stepLength) ? this.stepLength : stepLength;
 	this.steps		= steps || [1, 0];
 	this.attack		= isNaN(attack) ? this.attack : attack;
+	this.step = 0;
 }
 
 StepSequencer.prototype = {
 	sampleRate:	44100,
 	stepLength:	200,
 	steps:		null,
+	step: 0,
 	attack:		0,
 	phase:		0,
 	/* The current value of the step sequencer */
@@ -2494,15 +2496,15 @@ StepSequencer.prototype = {
 			stepLength	= self.sampleRate / 1000 * self.stepLength,
 			steps		= self.steps,
 			sequenceLength	= stepLength * steps.length,
-			step, overStep, prevStep, stepDiff,
+			overStep, prevStep, stepDiff,
 			val;
 		self.phase	= (self.phase + 1) % sequenceLength;
-		step		= self.phase / sequenceLength * steps.length;
-		overStep	= step % 1;
-		step		= ~~(step);
-		prevStep	= (step || steps.length) - 1;
-		stepDiff	= steps[step] - steps[prevStep];
-		val		= steps[step];
+		self.step		= self.phase / sequenceLength * steps.length;
+		overStep	= self.step % 1;
+		self.step		= ~~(self.step);
+		prevStep	= (self.step || steps.length) - 1;
+		stepDiff	= steps[self.step] - steps[prevStep];
+		val		= steps[self.step];
 		if (overStep < self.attack)  {
 			val -= stepDiff - stepDiff / self.attack * overStep;
 		}
