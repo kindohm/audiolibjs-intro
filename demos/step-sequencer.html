@@ -17,7 +17,7 @@
 
       <p><button id="playButton">Play/Pause</button></p>
 
-
+      <p class="muted" style="margin-top: 50px;"><small>Ground Theme: <a href="http://www.mariopiano.com/mario-sheet-music-overworld-main-theme.html">www.mariopiano.com/mario-sheet-music-overworld-main-theme.html</a></small></p>
     </div>
 
     <script src="songs/groundTheme.js"></script>
@@ -27,13 +27,15 @@
     <script>
 
 var channelCount = 1,
-  device,
+  device = null,
   sequencers = [],
   song,
   playing = false,
   oscs = [],
   samplesLeft = 0,
-  currentStepIndex = null;
+  currentStepIndex = null,
+  initializedMario = false,
+  tuneSamplesLeft = 5000;
 
 var audioCallback = function(buffer, channels){
   
@@ -54,12 +56,11 @@ var audioCallback = function(buffer, channels){
       }
 
       if (sequencers[0].step !== currentStepIndex) {
-        samplesLeft = 5000;
+        samplesLeft = tuneSamplesLeft;
         currentStepIndex = sequencers[0].step;
         for(o = 0; o < sequencers.length; o++) {
           oscs[o].frequency = sequencers[o].getMix();
         }
-        console.log(oscs[0].frequency + ', ' + oscs[1].frequency + ', ' + oscs[2].frequency);
       }
 
       if (samplesLeft >= 0){
@@ -122,8 +123,9 @@ var getFrequency = function(note) {
   return 0;
 };
 
-window.addEventListener('load', function(){
+var initializeMario = function(){
 
+  tuneSamplesLeft = 5000;
   var stepLength = 150;
   var seq0Steps = [];
   var seq1Steps = [];
@@ -136,18 +138,27 @@ window.addEventListener('load', function(){
     seq2Steps.push(getFrequency(step.freqs[2]));
   }
 
-  device = audioLib.AudioDevice(audioCallback, channelCount);
+  if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount);
+
+  sequencers = [];
   sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq0Steps, 0.0));
   sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq1Steps, 0.0));
   sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq2Steps, 0.0));
 
+  oscs = [];
   for (var i = 0; i < 3; i++){
     var osc = audioLib.Oscillator(device.sampleRate, 0);
     osc.waveShape = 'square';
     oscs.push(osc);
   }
 
+  initializedMario = true;
+};
+
+window.addEventListener('load', function(){
+
   $('#playButton').click(function(){
+    if (!initializedMario) initializeMario();
     playing = !playing;
   });
 
