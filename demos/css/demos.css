@@ -1,3 +1,8 @@
 button {
   padding: 5px;
 }
+
+#canvas{
+	background-color: #ccc;
+	margin-top: 20px;
+}

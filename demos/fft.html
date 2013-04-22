@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="utf-8">
-    <title>step sequencer demo</title>
+    <title>fft demo</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/demos.css">
     <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
@@ -13,11 +13,14 @@
 
     <div class="container">
 
-      <h1>StepSequencer Demo</h1>
+      <h1>FFT Demo</h1>
 
       <p><button id="marioPlayButton">Play/Pause Mario</button></p>
 
+      <canvas id="canvas" width="400" height="100"></canvas>
+
       <div id="errors" class="text-error"></div>
+
       <p class="muted" style="margin-top: 50px;"><small>Ground Theme: <a href="http://www.mariopiano.com/mario-sheet-music-overworld-main-theme.html">www.mariopiano.com/mario-sheet-music-overworld-main-theme.html</a></small></p>
 
     </div>
@@ -37,7 +40,9 @@ var channelCount = 1,
   samplesLeft = 0,
   currentStepIndex = null,
   initializedMario = false,
-  tuneSamplesLeft = 5000;
+  tuneSamplesLeft = 10000,
+  fft = null,
+  fps = 100;
 
 var audioCallback = function(buffer, channels){
   
@@ -69,12 +74,14 @@ var audioCallback = function(buffer, channels){
         for (o = 0; o < oscs.length; o++){        
           if (oscs[o].frequency !== 0) {
             oscs[o].generate();
-            sample += oscs[o].getMix() * 0.333;
+            sample += oscs[o].getMix() * 0.35;
           }
         }
 
         samplesLeft -= 1;
       }
+
+      fft.pushSample(sample);
 
       for (var x = 0; x < channels; x++){
         buffer[index + x] = sample;
@@ -126,7 +133,7 @@ var getFrequency = function(note) {
 var initializeMario = function(){
 
   try{
-    tuneSamplesLeft = 5000;
+    tuneSamplesLeft = 5500;
 
     var stepLength = 150;
     var seq0Steps = [];
@@ -141,6 +148,9 @@ var initializeMario = function(){
     }
 
     if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount);
+
+    // create the FFT 
+    fft = audioLib.FFT(device.sampleRate, 4096);
 
     sequencers = [];
     sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq0Steps, 0.0));
@@ -163,12 +173,45 @@ var initializeMario = function(){
 
 window.addEventListener('load', function(){
 
+  var canvas, button;  
+  canvas = document.getElementById('canvas'); 
+  context = canvas.getContext('2d'); 
+  width = canvas.width; 
+  height = canvas.height; 
+  context.fillStyle = "#ff0000"; 
+  context.lineWidth = 1;  
+
   $('#marioPlayButton').click(function(){
     if (!initializedMario) initializeMario();
     playing = !playing;
   });
 
+  Sink.doInterval( function(){   
+    drawFFT();  
+  }, 1000/fps);
+
 }, true);
+
+function drawFFT () {  
+  if (fft === null) return;
+
+  var length, count; 
+  length = fft.spectrum.length / 16;  
+  context.clearRect(0, 0, width, height); 
+  context.beginPath(); 
+  context.moveTo(0, height);  
+  for (count = 0; count < length; count++) { 
+    context.lineTo(count / length * width,  
+        fft.spectrum[count] * -height * 2 + height); 
+  }  
+  context.lineTo(width,height); 
+  context.closePath(); 
+  context.fill(); 
+  context.stroke(); 
+}
+
+
+
 
     </script>
   </body>
