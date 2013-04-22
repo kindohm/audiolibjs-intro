@@ -17,7 +17,9 @@
 
       <p><button id="playButton">Play/Pause</button></p>
 
+      <div id="errors" class="text-error"></div>
       <p class="muted" style="margin-top: 50px;"><small>Ground Theme: <a href="http://www.mariopiano.com/mario-sheet-music-overworld-main-theme.html">www.mariopiano.com/mario-sheet-music-overworld-main-theme.html</a></small></p>
+
     </div>
 
     <script src="songs/groundTheme.js"></script>
@@ -125,34 +127,40 @@ var getFrequency = function(note) {
 
 var initializeMario = function(){
 
-  tuneSamplesLeft = 5000;
-  var stepLength = 150;
-  var seq0Steps = [];
-  var seq1Steps = [];
-  var seq2Steps = [];
+  try{
+    tuneSamplesLeft = 5000;
 
-  for (var i = 0; i < groundTheme.length; i++){
-    var step = groundTheme[i];
-    seq0Steps.push(getFrequency(step.freqs[0]));
-    seq1Steps.push(getFrequency(step.freqs[1]));
-    seq2Steps.push(getFrequency(step.freqs[2]));
+    var stepLength = 150;
+    var seq0Steps = [];
+    var seq1Steps = [];
+    var seq2Steps = [];
+
+    for (var i = 0; i < groundTheme.length; i++){
+      var step = groundTheme[i];
+      seq0Steps.push(getFrequency(step.freqs[0]));
+      seq1Steps.push(getFrequency(step.freqs[1]));
+      seq2Steps.push(getFrequency(step.freqs[2]));
+    }
+
+    if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount);
+
+    sequencers = [];
+    sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq0Steps, 0.0));
+    sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq1Steps, 0.0));
+    sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq2Steps, 0.0));
+
+    oscs = [];
+    for (var i = 0; i < 3; i++){
+      var osc = audioLib.Oscillator(device.sampleRate, 0);
+      osc.waveShape = 'square';
+      oscs.push(osc);
+    }
+
+    initializedMario = true;
   }
-
-  if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount);
-
-  sequencers = [];
-  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq0Steps, 0.0));
-  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq1Steps, 0.0));
-  sequencers.push(audioLib.StepSequencer(device.sampleRate, stepLength, seq2Steps, 0.0));
-
-  oscs = [];
-  for (var i = 0; i < 3; i++){
-    var osc = audioLib.Oscillator(device.sampleRate, 0);
-    osc.waveShape = 'square';
-    oscs.push(osc);
+  catch(error) {
+    $('#errors').html('<p>' + error.message + '</p>');
   }
-
-  initializedMario = true;
 };
 
 window.addEventListener('load', function(){
@@ -163,9 +171,6 @@ window.addEventListener('load', function(){
   });
 
 }, true);
-
-
-
 
     </script>
   </body>
