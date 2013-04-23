@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="utf-8">
-    <title>fft demo</title>
+    <title>oscilloscope demo</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/demos.css">
     <link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.2.custom.css">
@@ -13,7 +13,7 @@
 
     <div class="container">
 
-      <h1>FFT Demo</h1>
+      <h1>Oscilloscope Demo</h1>
 
       <p><button id="marioPlayButton">Play/Pause Mario</button></p>
 
@@ -41,8 +41,11 @@ var channelCount = 1,
   currentStepIndex = null,
   initializedMario = false,
   tuneSamplesLeft = 10000,
-  fft = null,
-  fps = 100;
+  bufSize = 1024,
+  oscilloscope;
+  fps = 60;
+
+oscilloscope = new Array(bufSize);
 
 var audioCallback = function(buffer, channels){
   
@@ -81,10 +84,10 @@ var audioCallback = function(buffer, channels){
         samplesLeft -= 1;
       }
 
-      fft.pushSample(sample);
 
       for (var x = 0; x < channels; x++){
         buffer[index + x] = sample;
+        oscilloscope[index + x] = buffer[index + x];
       }
     }
 };
@@ -147,7 +150,7 @@ var initializeMario = function(){
       seq2Steps.push(getFrequency(step.freqs[2]));
     }
 
-    if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount);
+    if (device === null) device = audioLib.AudioDevice(audioCallback, channelCount, bufSize);
 
     // create the FFT 
     fft = audioLib.FFT(device.sampleRate, 4096);
@@ -160,7 +163,7 @@ var initializeMario = function(){
     oscs = [];
     for (var i = 0; i < 3; i++){
       var osc = audioLib.Oscillator(device.sampleRate, 0);
-      osc.waveShape = 'square';
+      osc.waveShape = 'sine';
       oscs.push(osc);
     }
 
@@ -179,7 +182,7 @@ window.addEventListener('load', function(){
   width = canvas.width; 
   height = canvas.height; 
   context.fillStyle = "#ff0000"; 
-  context.lineWidth = 1;  
+  context.lineWidth = 2;  
 
   $('#marioPlayButton').click(function(){
     if (!initializedMario) initializeMario();
@@ -187,32 +190,28 @@ window.addEventListener('load', function(){
   });
 
   Sink.doInterval( function(){   
-    drawFFT();  
+    drawOsc();  
   }, 1000/fps);
 
 }, true);
 
-function drawFFT () {  
-  if (fft === null) return;
-
-  var length, count; 
-  length = fft.spectrum.length / 16;  
+function drawOsc () {  
+  
+  var length, count, x, y; 
+  length = oscilloscope.length;  
   context.clearRect(0, 0, width, height); 
   context.beginPath(); 
-  context.moveTo(0, height);  
+  context.moveTo(0, height / 2);  
   for (count = 0; count < length; count++) { 
-    context.lineTo(count / length * width,  
-        fft.spectrum[count] * -height * 3 + height); 
+    x = count / length * width;
+    y = oscilloscope[count] * -height / 2 + height / 2;
+
+    context.lineTo(x, y);
   }  
-  context.lineTo(width,height); 
-  context.closePath(); 
-  context.fill(); 
+  context.strokeStyle = '#ff0000';
   context.stroke(); 
+
 }
-
-
-
-
     </script>
   </body>
 

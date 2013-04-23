@@ -40,13 +40,22 @@
 					<h1>audiolib.js</h1>
 					<h3>audio synthesis in the browser</h3>
 					<p>
-						<small>Created by <a href="http://kindohm.com">Mike Hodnick</a> [<a href="http://github.com/kindohm">kindohm @ github</a>]</small>
+						<small>Created by <a href="http://kindohm.com">Mike Hodnick</a> [<a href="http://github.com/kindohm">github.com/kindohm</a>]</small>
 					</p>
 				</section>
 
 				<section>
 					<h2>Why audio synthesis in the browser? *</h2>
 					<p><small>*hint: because it is freaking awesome</small></p>
+				</section>
+
+				<section>
+					<section>
+						<p>JavaScript -&gt; Audio API -&gt; Browser</p>
+					</section>
+					<section>
+						<p>JavaScript -&gt; audiolib.js -&gt; Audio API -&gt; Browser</p>
+					</section>
 				</section>
 
 				<section>
@@ -94,6 +103,7 @@
 							</tr>
 						</table>
 					</section>
+					<!-- not sure if I'm using this 
 					<section>
 						<h2>Sample Pipeline</h2>
 
@@ -105,6 +115,7 @@
 							<span class="box">Output</span>
 						</div>
 					</section>
+					-->
 
 				</section>
 
@@ -120,6 +131,7 @@
 						<p>* Not the same as the HTML5 &lt;audio&gt; object.</p>
 					</section>
 
+<!--
 					<section>
 						<h2>Mozilla Audio Data API Example</h2>
 						<pre><code>var audio = new Audio();
@@ -191,6 +203,7 @@ var audioCallback = function(buffer, channelCount) {
 device = audioLib.AudioDevice(audioCallback, channels);
 osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
 					</section>
+				-->
 				</section>
 
 				<section>
@@ -214,7 +227,7 @@ var audioCallback = function(buffer, channelCount) {
 };
 
 device = audioLib.AudioDevice(audioCallback, channels);
-osc = audioLib.Oscillator(device.sampleRate, 200);</code></pre>
+osc = audioLib.Oscillator(device.sampleRate, 400);</code></pre>
 						<p><a href="demos/oscillator-single-channel.html" target="_blank">demo</a></p>
 					</section>
 

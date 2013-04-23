@@ -29,7 +29,12 @@
       <h3>Oscillator #4 Mix:</h3>
       <div id="osc4Mix"></div>
 
+      <p>&nbsp;</p>
+      <p>Try inspecting the global <code>min</code> and <code>max</code> vars
+        at the console.</p>
+
     </div>
+
 
     <script src="../js/jquery-1.9.1.min.js"></script>
     <script src="../js/audiolib.min.js"></script>
@@ -38,6 +43,8 @@
 
 var playing = false,
   amount = 0,
+  max = 0,
+  min = 0,
   channelCount = 1,
   device, 
   oscillators = [],
@@ -61,6 +68,9 @@ var audioCallback = function(buffer, channels){
         oscillators[oscIndex].generate();
         sample += oscillators[oscIndex].getMix() * mixLevels[oscIndex];
       }
+
+      max = Math.max(sample, max);
+      min = Math.min(sample, min);
 
       for (i = 0; i < channels; i++){
         buffer[index + i] = sample;

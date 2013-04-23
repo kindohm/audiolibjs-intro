@@ -27,12 +27,14 @@ var playing = false,
   osc;
 
 var audioCallback = function(buffer, channels){
-  if (playing) osc.append(buffer, channels);
+  if (playing) {
+    osc.append(buffer, channels);
+  }
 };
 
 window.addEventListener('load', function(){
   device = audioLib.AudioDevice(audioCallback, channelCount);
-  osc = audioLib.Oscillator(device.sampleRate, 200);
+  osc = audioLib.Oscillator(device.sampleRate, 400);
 }, true);
 
 $('#play').click(function(){
