@@ -202,7 +202,6 @@ Voice.prototype = {
   stop: function(){
     this.releasing = true;
     this.envelope.state = 3;
-    //this.envelope.triggerGate(false);
   },
   _generate: function(){
     // do nothing
