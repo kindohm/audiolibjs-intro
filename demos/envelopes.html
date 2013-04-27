@@ -61,7 +61,6 @@ var audioCallback = function(buffer, channels){
       // clean up finished voices
       for (v = voices.length - 1; v >= 0; v--){
         if (voices[v].finished){
-            console.log('splicing ' + voices[v].frequency);
             voices.splice(v, 1);
         }
       }
